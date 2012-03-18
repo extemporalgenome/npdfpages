@@ -1,3 +1,15 @@
+// Copyright 2012 Kevin Gillette. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+/*
+Package npdfpages has no purpose other than to determine the number of pages in
+a PDF file. No checking is done to determine that the input is well formatted.
+
+It's possible, but extremely unlikely that PDF streams could contain byte
+sequences that result in false positives, though the number returned will be no
+less than the number of actual pages in the PDF.
+*/
 package npdfpages
 
 import (
@@ -6,9 +18,10 @@ import (
 	"os"
 )
 
-// guaranteed not to overlap or be adjacent
 const match = "/Page\x00"
 
+// Pages reads the given io.ByteReader until EOF is reached, returning the
+// number of pages encountered.
 func Pages(reader io.ByteReader) (pages int) {
 	i := 0
 	for {
@@ -34,6 +47,8 @@ func Pages(reader io.ByteReader) (pages int) {
 	return
 }
 
+// PagesAtPath opens a PDF file at the given file path, returning the number
+// of pages found.
 func PagesAtPath(path string) (pages int) {
 	if reader, err := os.Open(path); err == nil {
 		reader.Chdir()
